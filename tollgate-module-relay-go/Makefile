@@ -32,7 +32,9 @@ define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)/src
 	$(CP) $(PKG_BUILD_DIR)/src/* $(PKG_BUILD_DIR)/
 	cd $(PKG_BUILD_DIR) && \
+	rm -f go.mod go.sum && \
 	go mod init tollgate-module-relay-go && \
+	go mod edit -replace github.com/OpenTollgate/relay=./ && \
 	go mod tidy && \
 	go get github.com/fiatjaf/khatru && \
 	go get github.com/nbd-wtf/go-nostr
