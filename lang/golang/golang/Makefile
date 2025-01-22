@@ -174,13 +174,11 @@ BOOTSTRAP_ROOT_DIR:=$(call qstrip,$(CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT))
 BOOTSTRAP_1_20_SOURCE:=go1.20.6.src.tar.gz
 BOOTSTRAP_1_20_SOURCE_URL:=$(GO_SOURCE_URLS)
 BOOTSTRAP_1_20_HASH:=62ee5bc6fb55b8bae8f705e0cb8df86d6453626b4ecf93279e2867092e0b7f70
-
 BOOTSTRAP_1_20_BUILD_DIR:=$(HOST_BUILD_DIR)/.go_bootstrap_1_20
 
 ifeq ($(BOOTSTRAP_ROOT_DIR),)
 	BOOTSTRAP_ROOT_DIR:=$(BOOTSTRAP_1_20_BUILD_DIR)
 
-	# Bootstrap 1.20 download definition
 	define Download/golang-bootstrap-1.20
 		FILE:=$(BOOTSTRAP_1_20_SOURCE)
 		URL:=$(BOOTSTRAP_1_20_SOURCE_URL)
@@ -188,15 +186,12 @@ ifeq ($(BOOTSTRAP_ROOT_DIR),)
 	endef
 	$(eval $(call Download,golang-bootstrap-1.20))
 
-	# Single Bootstrap-1.20 prepare definition
 	define Bootstrap-1.20/Prepare
 		rm -rf "$(BOOTSTRAP_1_20_BUILD_DIR)"
 		mkdir -p "$(BOOTSTRAP_1_20_BUILD_DIR)"
 		$(HOST_TAR) -C "$(BOOTSTRAP_1_20_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(BOOTSTRAP_1_20_SOURCE)"
 	endef
 	Hooks/HostPrepare/Post+=Bootstrap-1.20/Prepare
-
-	# Add compiler profile
 	$(eval $(call GoCompiler/AddProfile,Bootstrap-1.20,$(BOOTSTRAP_1_20_BUILD_DIR),,bootstrap-1.20,$(GO_HOST_OS_ARCH)))
 endif
 
@@ -229,7 +224,6 @@ endef
 define Host/Configure
 	$(call GoCompiler/Bootstrap/CheckHost,$(BOOTSTRAP_GO_VALID_OS_ARCH))
 	$(call GoCompiler/Host/CheckHost,$(HOST_GO_VALID_OS_ARCH))
-
 	mkdir -p "$(GO_BUILD_CACHE_DIR)"
 endef
 
