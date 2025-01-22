@@ -191,14 +191,14 @@ endif
 # when using GO_LDFLAGS to set buildmode=pie, the PIE install suffix
 # does not apply (we also delete the std lib during Host/Install)
 
-$(eval $(call GoCompiler/AddProfile,Host,$(HOST_BUILD_DIR),$(HOST_GO_PREFIX),$(HOST_GO_VERSION_ID),$(GO_HOST_OS_ARCH),$(HOST_GO_INSTALL_SUFFIX)))
+# $(eval $(call GoCompiler/AddProfile,Host,$(HOST_BUILD_DIR),$(HOST_GO_PREFIX),$(HOST_GO_VERSION_ID),$(GO_HOST_OS_ARCH),$(HOST_GO_INSTALL_SUFFIX)))
 
-HOST_GO_VARS= \
-	GOHOSTARCH="$(GO_HOST_ARCH)" \
-	GOCACHE="$(GO_BUILD_CACHE_DIR)" \
-	GOENV=off \
-	CC="$(HOSTCC_NOCACHE)" \
-	CXX="$(HOSTCXX_NOCACHE)"
+# HOST_GO_VARS= \
+# 	GOHOSTARCH="$(GO_HOST_ARCH)" \
+#	GOCACHE="$(GO_BUILD_CACHE_DIR)" \
+#	GOENV=off \
+# 	CC="$(HOSTCC_NOCACHE)" \
+#	CXX="$(HOSTCXX_NOCACHE)"
 
 define GoCompiler/Bootstrap/CheckVersion
 	if [ "$(GO_BOOTSTRAP_VERSION)" \< "1.20.6" ]; then \
@@ -252,7 +252,7 @@ endef
 
 # Target
 ifeq ($(GO_PKG_ENABLE_PIE),1)
-  PKG_GO_INSTALL_SUFFIX:=$(GO_TARGET_PIE_INSTALL_SUFFIX)
+	PKG_GO_INSTALL_SUFFIX:=$(GO_TARGET_PIE_INSTALL_SUFFIX)
 endif
 
 $(eval $(call GoCompiler/AddProfile,Package,$(PKG_BUILD_DIR),$(PKG_GO_PREFIX),$(PKG_GO_VERSION_ID),$(GO_OS_ARCH),$(PKG_GO_INSTALL_SUFFIX)))
