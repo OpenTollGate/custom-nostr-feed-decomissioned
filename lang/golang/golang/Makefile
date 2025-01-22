@@ -19,8 +19,8 @@ PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PAT
 PKG_RELEASE:=1
 
 GO_SOURCE_URLS:=https://dl.google.com/go/ \
-                https://mirrors.ustc.edu.cn/golang/ \
-                https://mirrors.nju.edu.cn/golang/
+	https://mirrors.ustc.edu.cn/golang/ \
+	https://mirrors.nju.edu.cn/golang/
 
 PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
 PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
@@ -49,45 +49,37 @@ HOST_GO_VERSION_ID:=cross
 HOST_GO_ROOT:=$(HOST_GO_PREFIX)/lib/go-$(HOST_GO_VERSION_ID)
 
 HOST_GO_VALID_OS_ARCH:= \
-  android_386  android_amd64  android_arm  android_arm64 \
-  freebsd_386  freebsd_amd64  freebsd_arm  freebsd_arm64 \
-  linux_386    linux_amd64    linux_arm    linux_arm64 \
-  openbsd_386  openbsd_amd64  openbsd_arm  openbsd_arm64 \
-  netbsd_386   netbsd_amd64   netbsd_arm   netbsd_arm64 \
-  windows_386  windows_amd64  windows_arm  windows_arm64 \
-  \
-  plan9_386    plan9_amd64    plan9_arm \
-  \
-  darwin_amd64 darwin_arm64 \
-  ios_amd64    ios_arm64 \
-  \
-  dragonfly_amd64 \
-  illumos_amd64 \
-  solaris_amd64 \
-  \
-  aix_ppc64 \
-  js_wasm \
-  wasip1_wasm \
-  \
-  freebsd_riscv64 \
-  \
-  linux_ppc64 linux_ppc64le \
-  linux_mips linux_mipsle linux_mips64 linux_mips64le \
-  linux_loong64 linux_riscv64 linux_s390x \
-  \
-  openbsd_mips64
-
+	android_386	android_amd64	android_arm	android_arm64 \
+	freebsd_386	freebsd_amd64	freebsd_arm	freebsd_arm64 \
+	linux_386	linux_amd64	linux_arm	linux_arm64 \
+	openbsd_386	openbsd_amd64	openbsd_arm	openbsd_arm64 \
+	netbsd_386	netbsd_amd64	netbsd_arm	netbsd_arm64 \
+	windows_386	windows_amd64	windows_arm	windows_arm64 \
+	plan9_386	plan9_amd64	plan9_arm \
+	darwin_amd64	darwin_arm64 \
+	ios_amd64	ios_arm64 \
+	dragonfly_amd64 \
+	illumos_amd64 \
+	solaris_amd64 \
+	aix_ppc64 \
+	js_wasm \
+	wasip1_wasm \
+	freebsd_riscv64 \
+	linux_ppc64 linux_ppc64le \
+	linux_mips	linux_mipsle	linux_mips64	linux_mips64le \
+	linux_loong64	linux_riscv64	linux_s390x \
+	openbsd_mips64
 
 BOOTSTRAP_GO_VALID_OS_ARCH:= \
-  darwin_386     darwin_amd64 \
-  dragonfly_386  dragonfly_amd64 \
-  freebsd_386    freebsd_amd64    freebsd_arm \
-  linux_386      linux_amd64      linux_arm \
-  netbsd_386     netbsd_amd64     netbsd_arm \
-  openbsd_386    openbsd_amd64 \
-  plan9_386      plan9_amd64 \
-                 solaris_amd64 \
-  windows_386    windows_amd64
+	darwin_386	darwin_amd64 \
+	dragonfly_386	dragonfly_amd64 \
+	freebsd_386	freebsd_amd64	freebsd_arm \
+	linux_386	linux_amd64	linux_arm \
+	netbsd_386	netbsd_amd64	netbsd_arm \
+	openbsd_386	openbsd_amd64 \
+	plan9_386	plan9_amd64 \
+	solaris_amd64 \
+	windows_386	windows_amd64
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
@@ -135,9 +127,8 @@ endef
 
 define Package/golang/description
 $(call Package/golang/Default/description)
-
-This package provides an assembler, compiler, linker, and compiled
-libraries for the Go programming language.
+# This package provides an assembler, compiler, linker, and compiled
+# libraries for the Go programming language.
 endef
 
 define Package/golang/config
@@ -152,7 +143,7 @@ endef
 define Package/golang-doc/description
 $(call Package/golang/Default/description)
 
-This package provides the documentation for the Go programming language.
+# This package provides the documentation for the Go programming language.
 endef
 
 define Package/golang-src
@@ -162,9 +153,8 @@ endef
 
 define Package/golang-src/description
 $(call Package/golang/Default/description)
-
-This package provides the Go programming language source files needed
-for cross-compilation.
+# This package provides the Go programming language source files needed
+# for cross-compilation.
 endef
 
 # Bootstrap
@@ -178,14 +168,12 @@ BOOTSTRAP_1_20_BUILD_DIR:=$(HOST_BUILD_DIR)/.go_bootstrap_1_20
 
 ifeq ($(BOOTSTRAP_ROOT_DIR),)
 	BOOTSTRAP_ROOT_DIR:=$(BOOTSTRAP_1_20_BUILD_DIR)
-
 	define Download/golang-bootstrap-1.20
 		FILE:=$(BOOTSTRAP_1_20_SOURCE)
 		URL:=$(BOOTSTRAP_1_20_SOURCE_URL)
 		HASH:=$(BOOTSTRAP_1_20_HASH)
 	endef
 	$(eval $(call Download,golang-bootstrap-1.20))
-
 	define Bootstrap-1.20/Prepare
 		rm -rf "$(BOOTSTRAP_1_20_BUILD_DIR)"
 		mkdir -p "$(BOOTSTRAP_1_20_BUILD_DIR)"
@@ -196,7 +184,6 @@ ifeq ($(BOOTSTRAP_ROOT_DIR),)
 endif
 
 # Host
-
 ifeq ($(GO_HOST_PIE_SUPPORTED),1)
 	HOST_GO_ENABLE_PIE:=1
 endif
