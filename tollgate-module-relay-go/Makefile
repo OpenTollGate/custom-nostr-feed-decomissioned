@@ -14,6 +14,10 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 # Define IPK path variable
 IPK_FILE:=$(BIN_DIR)/packages/$(ARCH_PACKAGES)/custom/$(PKG_NAME)_$(PKG_VERSION)-$(PKG_RELEASE)_$(ARCH_PACKAGES).ipk
 
+# Add this before including golang.mk
+$(shell mkdir -p $(TOPDIR)/include)
+$(shell cp -f $(CURDIR)/golang.mk $(TOPDIR)/include/golang.mk 2>/dev/null || true)
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
