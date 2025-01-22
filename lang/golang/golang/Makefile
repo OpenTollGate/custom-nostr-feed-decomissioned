@@ -141,7 +141,7 @@ libraries for the Go programming language.
 endef
 
 define Package/golang/config
-  source "$(SOURCE)/Config.in"
+	source "$(SOURCE)/Config.in"
 endef
 
 define Package/golang-doc
@@ -214,11 +214,10 @@ HOST_GO_VARS= \
 	CXX="$(HOSTCXX_NOCACHE)"
 
 define GoCompiler/Bootstrap/CheckVersion
-        # Add version check logic
-        if [ "$(GO_BOOTSTRAP_VERSION)" \< "1.20.6" ]; then \
-                echo "Error: Go bootstrap version must be at least 1.20.6" >&2; \
-                exit 1; \
-        fi
+	if [ "$(GO_BOOTSTRAP_VERSION)" \< "1.20.6" ]; then \
+		echo "Error: Go bootstrap version must be at least 1.20.6" >&2; \
+		exit 1; \
+	fi
 endef
 
 define Host/Configure
@@ -247,14 +246,10 @@ endef
 # so remove it now and force go to rebuild std for target later
 define Host/Install
 	$(call Host/Uninstall)
-
 	$(call GoCompiler/Host/Install/Bin,)
 	$(call GoCompiler/Host/Install/Src,)
-
 	$(call GoCompiler/Host/Install/BinLinks,)
-
 	rm -rf "$(HOST_GO_ROOT)/pkg/$(GO_HOST_OS_ARCH)$(if $(HOST_GO_INSTALL_SUFFIX),_$(HOST_GO_INSTALL_SUFFIX))"
-
 	$(INSTALL_DIR) "$(HOST_GO_ROOT)/openwrt"
 	$(INSTALL_BIN) ./files/go-gcc-helper "$(HOST_GO_ROOT)/openwrt/"
 	$(LN) go-gcc-helper "$(HOST_GO_ROOT)/openwrt/gcc"
@@ -263,21 +258,17 @@ endef
 
 define Host/Uninstall
 	rm -rf "$(HOST_GO_ROOT)/openwrt"
-
 	$(call GoCompiler/Host/Uninstall/BinLinks,)
-
 	$(call GoCompiler/Host/Uninstall,)
 endef
 
 
 # Target
-
 ifeq ($(GO_PKG_ENABLE_PIE),1)
   PKG_GO_INSTALL_SUFFIX:=$(GO_TARGET_PIE_INSTALL_SUFFIX)
 endif
 
 $(eval $(call GoCompiler/AddProfile,Package,$(PKG_BUILD_DIR),$(PKG_GO_PREFIX),$(PKG_GO_VERSION_ID),$(GO_OS_ARCH),$(PKG_GO_INSTALL_SUFFIX)))
-
 PKG_GO_ZBOOTSTRAP_MODS:= \
 	s/defaultGO386 = `[^`]*`/defaultGO386 = `$(or $(GO_386),sse2)`/; \
 	s/defaultGOAMD64 = `[^`]*`/defaultGOAMD64 = `$(or $(GO_AMD64),v1)`/; \
@@ -324,16 +315,13 @@ endef
 
 define Build/Compile
 	@echo "Building target Go first stage"
-
 	$(call GoCompiler/Package/Make, \
 		GOROOT_BOOTSTRAP="$(HOST_GO_ROOT)" \
 		GO_GCC_HELPER_CC="$(HOSTCC)" \
 		GO_GCC_HELPER_CXX="$(HOSTCXX)" \
 		$(PKG_GO_VARS) \
 	)
-
 	$(SED) '$(PKG_GO_ZBOOTSTRAP_MODS)' "$(PKG_GO_ZBOOTSTRAP_PATH)"
-
 	( \
 		if echo 'int main() { return 0; }' | $(TARGET_CC) -o $(PKG_BUILD_DIR)/test-ldso -x c - > /dev/null 2>&1; then \
 			LDSO=$$$$( \
