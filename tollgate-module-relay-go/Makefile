@@ -11,6 +11,8 @@ PKG_SOURCE_VERSION:=HEAD
 PKG_MIRROR_HASH:=skip
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+# Define IPK path variable
+IPK_FILE:=$(BIN_DIR)/packages/$(ARCH_PACKAGES)/custom/$(PKG_NAME)_$(PKG_VERSION)-$(PKG_RELEASE)_$(ARCH_PACKAGES).ipk
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
@@ -62,4 +64,13 @@ define Package/tollgate-module-relay-go/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tollgate-relay $(1)/usr/bin/
 endef
 
+# Add custom target to print IPK path
+define Package/tollgate-module-relay-go/postinst
+	@echo "Package compiled successfully!"
+	@echo "IPK file location: $(IPK_FILE)"
+endef
+
 $(eval $(call BuildPackage,tollgate-module-relay-go))
+
+# Print IPK path after successful compilation
+PKG_FINISH:=$(shell echo "Successfully built: $(IPK_FILE)" >&2)
