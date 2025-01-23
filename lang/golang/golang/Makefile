@@ -241,6 +241,8 @@ define Host/Install
 	$(INSTALL_BIN) ./files/go-gcc-helper "$(HOST_GO_ROOT)/openwrt/"
 	$(LN) go-gcc-helper "$(HOST_GO_ROOT)/openwrt/gcc"
 	$(LN) go-gcc-helper "$(HOST_GO_ROOT)/openwrt/g++"
+	$(INSTALL_DIR) $(STAGING_DIR_HOST)/go
+	$(CP) $(HOST_GO_ROOT)/* $(STAGING_DIR_HOST)/go/
 endef
 
 define Host/Uninstall
