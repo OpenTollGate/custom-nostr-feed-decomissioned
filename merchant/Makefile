@@ -1,11 +1,11 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=tollgate-module-relay-go
+PKG_NAME:=tollgate-module-merchant-go
 PKG_VERSION:=0.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-relay-go.git
+PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-merchant-go.git
 PKG_SOURCE_VERSION:=HEAD
 # You'll need to generate a new hash after first clone
 PKG_MIRROR_HASH:=skip
@@ -21,16 +21,16 @@ $(shell cp -f $(CURDIR)/golang.mk $(TOPDIR)/include/golang.mk 2>/dev/null || tru
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
-define Package/tollgate-module-relay-go
+define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=TollGate Relay Module
-	URL:=https://github.com/OpenTollGate/tollgate-module-relay-go
+	TITLE:=TollGate Merchant Module
+	URL:=https://github.com/OpenTollGate/tollgate-module-merchant-go
 	DEPENDS:=+golang
 endef
 
-define Package/tollgate-module-relay-go/description
-	TollGate Relay Module implementation in Go
+define Package/$(PKG_NAME)/description
+	TollGate Merchant Module implementation in Go
 endef
 
 define Build/Prepare
@@ -39,8 +39,8 @@ define Build/Prepare
 	$(CP) $(PKG_BUILD_DIR)/src/* $(PKG_BUILD_DIR)/
 	cd $(PKG_BUILD_DIR) && \
 	rm -f go.mod go.sum && \
-	go mod init tollgate-module-relay-go && \
-	go mod edit -replace github.com/OpenTollgate/relay=./ && \
+	go mod init $(PKG_NAME) && \
+	go mod edit -replace github.com/OpenTollgate/merchant=./ && \
 	go mod tidy && \
 	go get github.com/fiatjaf/khatru && \
 	go get github.com/nbd-wtf/go-nostr
@@ -60,21 +60,15 @@ define Build/Compile
 	CC=$(TARGET_CC) \
 	CXX=$(TARGET_CXX) \
 	GOPATH=$(GOPATH) \
-	go build -trimpath -ldflags "-s -w" -o $(PKG_BUILD_DIR)/tollgate-relay main.go
+	go build -trimpath -ldflags "-s -w" -o $(PKG_BUILD_DIR)/tollgate-merchant main.go
 endef
 
-define Package/tollgate-module-relay-go/install
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tollgate-relay $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tollgate-merchant $(1)/usr/bin/
 endef
 
-# Add custom target to print IPK path
-#define Package/tollgate-module-relay-go/postinst
-#	echo "Package compiled successfully!"
-#	echo "IPK file location: $(IPK_FILE)"
-#endef
-
-$(eval $(call BuildPackage,tollgate-module-relay-go))
+$(eval $(call BuildPackage,$(PKG_NAME)))
 
 # Print IPK path after successful compilation
 PKG_FINISH:=$(shell echo "Successfully built: $(IPK_FILE)" >&2)
