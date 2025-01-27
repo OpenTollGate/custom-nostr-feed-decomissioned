@@ -26,7 +26,28 @@ define Package/tollgate-module-relay-go
 	CATEGORY:=Network
 	TITLE:=TollGate Relay Module
 	URL:=https://github.com/OpenTollGate/tollgate-module-relay-go
-	DEPENDS:=@(mips||aarch64) $(if $(CONFIG_aarch64),+golang,)
+	DEPENDS:=+golang
+endef
+
+define Package/tollgate-module-relay-go/description
+	TollGate Relay Module implementation in Go
+endef
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	# Copy the actual Go code into PKG_BUILD_DIR
+	mkdir -p $(PKG_BUILD_DIR)/src
+	$(CP) $(PKG_BUILD_DIR)/src/* $(PKG_BUILD_DIR)/
+	# Initialize go.mod in PKG_BUILD_DIR, then tidy
+	cd $(PKG_BUILD_DIR) && \
+	rm -f go.mod go.sum && \
+	go mod init tollgate-module-relay-go && \
+	go mod tidy && \
+	go get github.com/fiatjaf/khatru && \
+	go get github.com/nbd-wtf/go-nostr
+endef
+
+define Build/Configure
 endef
 
 define Build/Compile
