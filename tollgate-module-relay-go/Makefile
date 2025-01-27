@@ -26,7 +26,8 @@ define Package/tollgate-module-relay-go
 	CATEGORY:=Network
 	TITLE:=TollGate Relay Module
 	URL:=https://github.com/OpenTollGate/tollgate-module-relay-go
-	DEPENDS:=+golang
+	DEPENDS:=+golang $(GO_ARCH_DEPENDS)
+	PKG_BUILD_DEPENDS:=golang/host
 endef
 
 define Package/tollgate-module-relay-go/description
@@ -51,16 +52,11 @@ endef
 
 define Build/Compile
 	cd $(PKG_BUILD_DIR) && \
-	GOOS=$(GO_TARGET_OS) \
-	GOARCH=$(GO_TARGET_ARCH) \
-	GOARM=$(GO_ARM) \
-	GOMIPS=$(GO_MIPS) \
-	GO386=$(GO_386) \
-	CGO_ENABLED=1 \
-	CC=$(TARGET_CC) \
-	CXX=$(TARGET_CXX) \
-	GOPATH=$(GOPATH) \
-	go build -trimpath -ldflags "-s -w" -o $(PKG_BUILD_DIR)/tollgate-relay main.go
+	$(GO_COMPILE_FLAGS) \
+	go build -trimpath \
+	$(GO_CUSTOM_FLAGS) \
+	-ldflags "$(GO_PKG_LDFLAGS) $(GO_LDFLAGS)" \
+	-o $(PKG_BUILD_DIR)/tollgate-relay main.go
 endef
 
 define Package/tollgate-module-relay-go/install
