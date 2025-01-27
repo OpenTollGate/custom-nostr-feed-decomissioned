@@ -45,10 +45,10 @@ GO_PKG_LDFLAGS:=-s -w
 
 # Remove the PIE mode for MIPS architecture
 ifeq ($(GO_TARGET_ARCH),mips)
-  GO_LDFLAGS:=-extldflags -static
-  GO_CUSTOM_FLAGS:=
+  GO_LDFLAGS:=-extldflags "-static -z now"
+  GO_PKG_GCFLAGS:=-N -l
 else
-  GO_LDFLAGS:=-extldflags -static
+  GO_LDFLAGS:=-extldflags "-static"
   GO_CUSTOM_FLAGS:=-buildmode pie
 endif
 
