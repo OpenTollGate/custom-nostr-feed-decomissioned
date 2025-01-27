@@ -43,8 +43,11 @@ GO_STRIP_ARGS:=--strip-unneeded --remove-section=.comment --remove-section=.note
 GO_PKG_GCFLAGS:=
 GO_PKG_LDFLAGS:=-s -w
 
-# Additional MIPS-specific settings
+# Remove the PIE mode for MIPS architecture
 ifeq ($(GO_TARGET_ARCH),mips)
+  GO_LDFLAGS:=-extldflags -static
+  GO_CUSTOM_FLAGS:=
+else
   GO_LDFLAGS:=-extldflags -static
   GO_CUSTOM_FLAGS:=-buildmode pie
 endif

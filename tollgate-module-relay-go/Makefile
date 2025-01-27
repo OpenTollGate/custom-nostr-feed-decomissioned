@@ -52,9 +52,18 @@ endef
 
 define Build/Compile
 	cd $(PKG_BUILD_DIR) && \
-	$(GO_COMPILE_FLAGS) \
+	GOOS=$(GO_TARGET_OS) \
+	GOARCH=$(GO_TARGET_ARCH) \
+	GO386=$(GO_386) \
+	GOARM=$(GO_ARM) \
+	GOMIPS=$(GO_MIPS) \
+	GOMIPS64=$(GO_MIPS64) \
+	CGO_ENABLED=1 \
+	CC=$(TARGET_CC) \
+	CXX=$(TARGET_CXX) \
+	GOPATH=$(GOPATH) \
 	go build -trimpath \
-	$(GO_CUSTOM_FLAGS) \
+	$(if $(CONFIG_MIPS),,$(GO_CUSTOM_FLAGS)) \
 	-ldflags "$(GO_PKG_LDFLAGS) $(GO_LDFLAGS)" \
 	-o $(PKG_BUILD_DIR)/tollgate-relay main.go
 endef
