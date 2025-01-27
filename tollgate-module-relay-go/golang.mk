@@ -17,7 +17,7 @@ endif
 
 # Architecture-specific settings
 GO_ARM:=$(if $(CONFIG_arm),$(if $(CONFIG_HAS_FPU),7,$(if $(CONFIG_GOARM_5),5,$(if $(CONFIG_GOARM_6),6,7))))
-GO_MIPS:=$(if $(CONFIG_mips),$(if $(CONFIG_MIPS_FP_32),hardfloat,softfloat),)
+GO_MIPS:=$(if $(CONFIG_mips),softfloat,)
 GO_MIPS64:=$(if $(CONFIG_mips64),$(if $(CONFIG_MIPS_FP_64),hardfloat,softfloat),)
 GO_386:=$(if $(CONFIG_i386),$(if $(CONFIG_CPU_TYPE_PENTIUM4),387,sse2),)
 
@@ -25,31 +25,34 @@ GO_386:=$(if $(CONFIG_i386),$(if $(CONFIG_CPU_TYPE_PENTIUM4),387,sse2),)
 GO_TARGET_ARCH:=$(subst \
     aarch64,arm64,$(subst \
     x86_64,amd64,$(subst \
-    i386,386,$(subst \
-    mipsel,mipsle,$(subst \
-    mips64el,mips64le,$(subst \
-    powerpc64,ppc64,$(ARCH)))))))
+    i386,386,$(ARCH))))
 
 GO_TARGET_OS:=linux
 
-# Host settings
-GO_HOST_ARCH:=$(shell go env GOHOSTARCH)
-GO_HOST_OS:=$(shell go env GOHOSTOS)
-GO_HOST_TARGET_SAME:=$(if $(and $(findstring $(GO_TARGET_ARCH),$(GO_HOST_ARCH)),$(findstring $(GO_TARGET_OS),$(GO_HOST_OS))),1)
-GO_HOST_TARGET_DIFFERENT:=$(if $(GO_HOST_TARGET_SAME),,1)
-
 # Build flags
-GO_STRIP_ARGS:=--strip-unneeded --remove-section=.comment --remove-section=.note
-GO_PKG_GCFLAGS:=
 GO_PKG_LDFLAGS:=-s -w
 
-# Remove the PIE mode for MIPS architecture
+# Architecture-specific compile settings
 ifeq ($(GO_TARGET_ARCH),mips)
-  GO_LDFLAGS:=-extldflags "-static -z now"
-  GO_PKG_GCFLAGS:=-N -l
+    GO_COMPILE_FLAGS:= \
+        GOOS=$(GO_TARGET_OS) \
+        GOARCH=$(GO_TARGET_ARCH) \
+        GOMIPS=softfloat \
+        CGO_ENABLED=0
+else ifeq ($(GO_TARGET_ARCH),arm64)
+    GO_COMPILE_FLAGS:= \
+        GOOS=$(GO_TARGET_OS) \
+        GOARCH=$(GO_TARGET_ARCH) \
+        CGO_ENABLED=1 \
+        CC=$(TARGET_CC) \
+        CXX=$(TARGET_CXX)
 else
-  GO_LDFLAGS:=-extldflags "-static"
-  GO_CUSTOM_FLAGS:=-buildmode pie
+    GO_COMPILE_FLAGS:= \
+        GOOS=$(GO_TARGET_OS) \
+        GOARCH=$(GO_TARGET_ARCH) \
+        CGO_ENABLED=1 \
+        CC=$(TARGET_CC) \
+        CXX=$(TARGET_CXX)
 endif
 
 # Package build settings
@@ -57,25 +60,5 @@ GO_PKG_BUILD_PKG?=$(GO_PKG)/...
 GO_PKG_WORK_DIR_NAME:=.go_work
 GO_PKG_WORK_DIR:=$(PKG_BUILD_DIR)/$(GO_PKG_WORK_DIR_NAME)
 GO_PKG_BUILD_DIR:=$(GO_PKG_WORK_DIR)/build
-GO_PKG_CACHE_DIR:=$(GO_PKG_WORK_DIR)/cache
-GO_PKG_TMP_DIR:=$(GO_PKG_WORK_DIR)/tmp
-GO_PKG_BUILD_BIN_DIR:=$(GO_PKG_BUILD_DIR)/bin$(if $(GO_HOST_TARGET_DIFFERENT),/$(GO_TARGET_OS)_$(GO_TARGET_ARCH))
-
-# Build paths
-GO_BUILD_DIR_PATH:=$(firstword $(subst :, ,$(GOPATH)))
-GO_BUILD_PATH:=$(if $(GO_PKG),$(GO_BUILD_DIR_PATH)/src/$(GO_PKG))
-
-# Architecture-specific compile flags
-GO_COMPILE_FLAGS:= \
-    GOOS=$(GO_TARGET_OS) \
-    GOARCH=$(GO_TARGET_ARCH) \
-    GO386=$(GO_386) \
-    GOARM=$(GO_ARM) \
-    GOMIPS=$(GO_MIPS) \
-    GOMIPS64=$(GO_MIPS64) \
-    CGO_ENABLED=1 \
-    CC=$(TARGET_CC) \
-    CXX=$(TARGET_CXX) \
-    GOPATH=$(GOPATH)
 
 endif # __golang_mk_inc
