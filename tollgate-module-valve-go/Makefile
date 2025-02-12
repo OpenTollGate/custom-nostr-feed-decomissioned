@@ -1,22 +1,33 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tollgate-module-valve-go
-PKG_VERSION:=0.1
-PKG_RELEASE:=1
 
+# Get git information from the source repository
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-valve-go.git
-PKG_SOURCE_VERSION:=HEAD
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE_VERSION:=add_actions
 # You'll need to generate a new hash after first clone
 PKG_MIRROR_HASH:=skip
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-# Define IPK path variable
-IPK_FILE:=$(BIN_DIR)/packages/$(ARCH_PACKAGES)/custom/$(PKG_NAME)_$(PKG_VERSION)-$(PKG_RELEASE)_$(ARCH_PACKAGES).ipk
+# Dynamic version generation after source fetch
+define Package/$(PKG_NAME)/GetGitInfo
+    cd $(PKG_BUILD_DIR) && \
+    PKG_BRANCH=$$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main") && \
+    PKG_COMMITS=$$(git rev-list --count HEAD 2>/dev/null || echo "1") && \
+    PKG_SHORT_COMMIT=$$(git rev-parse --short HEAD 2>/dev/null || echo "unknown") && \
+    if [ "$$PKG_BRANCH" = "main" ] || [ "$$PKG_BRANCH" = "master" ]; then \
+        echo "0.$$PKG_COMMITS" ; \
+    else \
+        echo "0.$$PKG_COMMITS-$$PKG_BRANCH" ; \
+    fi
+endef
 
-# Add this before including golang.mk
-$(shell mkdir -p $(TOPDIR)/include)
-$(shell cp -f $(CURDIR)/golang.mk $(TOPDIR)/include/golang.mk 2>/dev/null || true)
+PKG_VERSION:=$(shell $(call Package/$(PKG_NAME)/GetGitInfo))
+PKG_RELEASE:=$(shell cd $(PKG_BUILD_DIR) 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo "1")
+
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+IPK_FILE:=$(BIN_DIR)/packages/$(ARCH_PACKAGES)/custom/$(PKG_NAME)_$(PKG_VERSION)-$(PKG_RELEASE)_$(ARCH_PACKAGES).ipk
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
@@ -60,7 +71,12 @@ define Build/Compile
 	CC=$(TARGET_CC) \
 	CXX=$(TARGET_CXX) \
 	GOPATH=$(GOPATH) \
-	go build -trimpath -ldflags "-s -w" -o $(PKG_BUILD_DIR)/tollgate-valve main.go
+	go build -trimpath \
+		-ldflags "-s -w \
+		-X main.Version=$(PKG_VERSION) \
+		-X main.CommitHash=$(PKG_RELEASE) \
+		-X main.BuildTime=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')" \
+	-o $(PKG_BUILD_DIR)/tollgate-valve src/main.go
 endef
 
 define Package/$(PKG_NAME)/install

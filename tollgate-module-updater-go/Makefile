@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=tollgate-module-relay-go
+PKG_NAME:=tollgate-module-updater-go
 
 # Get git information from the source repository
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-relay-go.git
+PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-updater-go.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_VERSION:=verify_changes_in_binary
+PKG_SOURCE_VERSION:=main
 # You'll need to generate a new hash after first clone
 PKG_MIRROR_HASH:=skip
 
@@ -35,13 +35,13 @@ include $(INCLUDE_DIR)/golang.mk
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=TollGate Relay Module
-	URL:=https://github.com/OpenTollGate/tollgate-module-relay-go
+	TITLE:=TollGate Updater Module
+	URL:=https://github.com/OpenTollGate/tollgate-module-updater-go
 	DEPENDS:=+golang
 endef
 
 define Package/$(PKG_NAME)/description
-	TollGate Relay Module implementation in Go
+	TollGate Updater Module implementation in Go
 endef
 
 define Build/Prepare
@@ -50,8 +50,8 @@ define Build/Prepare
 	$(CP) $(PKG_BUILD_DIR)/src/* $(PKG_BUILD_DIR)/
 	cd $(PKG_BUILD_DIR) && \
 	rm -f go.mod go.sum && \
-	go mod init tollgate-module-relay-go && \
-	go mod edit -replace github.com/OpenTollgate/relay=./ && \
+	go mod init $(PKG_NAME) && \
+	go mod edit -replace github.com/OpenTollGate/tollgate-updater=./ && \
 	go mod tidy && \
 	go get github.com/fiatjaf/khatru && \
 	go get github.com/nbd-wtf/go-nostr
@@ -76,19 +76,13 @@ define Build/Compile
 		-X main.Version=$(PKG_VERSION) \
 		-X main.CommitHash=$(PKG_RELEASE) \
 		-X main.BuildTime=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')" \
-	-o $(PKG_BUILD_DIR)/tollgate-relay src/main.go
+	-o $(PKG_BUILD_DIR)/tollgate-updater src/main.go
 endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tollgate-relay $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tollgate-updater $(1)/usr/bin/
 endef
-
-# Add custom target to print IPK path
-#define Package/tollgate-module-relay-go/postinst
-#	echo "Package compiled successfully!"
-#	echo "IPK file location: $(IPK_FILE)"
-#endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
 
