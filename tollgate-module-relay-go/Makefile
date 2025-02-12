@@ -6,7 +6,7 @@ PKG_NAME:=tollgate-module-relay-go
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-relay-go.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_VERSION:=verify_changes_in_binary
+PKG_SOURCE_VERSION:=main
 # You'll need to generate a new hash after first clone
 PKG_MIRROR_HASH:=skip
 

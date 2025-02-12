@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=tollgate-module-updater-go
+PKG_NAME:=tollgate-module-merchant-go
 
 # Get git information from the source repository
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-merchant-go.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_VERSION:=add_actions
+PKG_SOURCE_VERSION:=main
 # You'll need to generate a new hash after first clone
 PKG_MIRROR_HASH:=skip
 
