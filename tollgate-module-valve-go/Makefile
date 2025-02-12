@@ -6,7 +6,7 @@ PKG_NAME:=tollgate-module-valve-go
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/OpenTollGate/tollgate-module-valve-go.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_VERSION:=add_actions
+PKG_SOURCE_VERSION:=main
 # You'll need to generate a new hash after first clone
 PKG_MIRROR_HASH:=skip
 
